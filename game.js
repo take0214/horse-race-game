@@ -1,5 +1,36 @@
 'use strict';
 
+// ===== Viewport Adjustment =====
+function adjustViewport() {
+    const app = document.getElementById('app');
+    if (!app) return;
+
+    // Use visualViewport if available (better for mobile)
+    const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+
+    // Set CSS custom properties for dynamic sizing
+    document.documentElement.style.setProperty('--vh', `${vh * 0.01}px`);
+    document.documentElement.style.setProperty('--vw', `${vw * 0.01}px`);
+
+    // Adjust app height dynamically
+    const isMobile = vw < 768; // Consider mobile if width < 768px
+    if (isMobile) {
+        app.style.height = `${vh}px`;
+        app.style.maxHeight = `${vh}px`;
+    } else {
+        app.style.height = '100vh';
+        app.style.maxHeight = '860px';
+    }
+}
+
+// Initialize and listen for resize
+adjustViewport();
+window.addEventListener('resize', adjustViewport);
+if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', adjustViewport);
+}
+
 // ===== Configuration =====
 const CONFIG = {
     canvasW: 480,
