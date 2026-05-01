@@ -328,15 +328,17 @@ function drawTrack() {
     // Start line
     ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
     ctx.fillRect(trackPad, CONFIG.startLineY, canvas.width - trackPad * 2, 4);
+    const startFontSize = Math.max(8, Math.min(11, canvas.width / 43));
     ctx.fillStyle = '#fff';
-    ctx.font = 'bold 11px Arial';
+    ctx.font = `bold ${startFontSize}px Arial`;
     ctx.textAlign = 'left';
     ctx.fillText('START', trackPad + 4, CONFIG.startLineY - 4);
 
     // Finish line (checkered)
     drawCheckered(trackPad, CONFIG.finishLineY - 12, canvas.width - trackPad * 2, 12);
+    const finishFontSize = Math.max(10, Math.min(13, canvas.width / 37));
     ctx.fillStyle = '#fff';
-    ctx.font = 'bold 13px Arial';
+    ctx.font = `bold ${finishFontSize}px Arial`;
     ctx.textAlign = 'center';
     ctx.fillText('🏁 FINISH 🏁', canvas.width / 2, CONFIG.finishLineY - 18);
 }
@@ -463,21 +465,23 @@ function drawHorse(p, frame) {
     else if (isDrunk) drawStatusIcon(x + 14, y - 10, '🍺', frame);
 
     // Name label
-    ctx.font = 'bold 11px sans-serif';
+    const nameFontSize = Math.max(8, Math.min(11, canvas.width / 43));
+    ctx.font = `bold ${nameFontSize}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'bottom';
     ctx.fillStyle = '#fff';
     ctx.strokeStyle = 'rgba(0, 0, 0, 0.85)';
-    ctx.lineWidth = 3;
+    ctx.lineWidth = Math.max(2, canvas.width / 240);
     ctx.strokeText(p.name, x, y - 32);
     ctx.fillText(p.name, x, y - 32);
 
     // Finished badge
     if (p.finished) {
-        ctx.font = 'bold 13px sans-serif';
+        const finishFontSize = Math.max(10, Math.min(13, canvas.width / 37));
+        ctx.font = `bold ${finishFontSize}px sans-serif`;
         ctx.fillStyle = '#FFD700';
         ctx.strokeStyle = '#000';
-        ctx.lineWidth = 3;
+        ctx.lineWidth = Math.max(2, canvas.width / 240);
         const text = `${p.rank}位!`;
         ctx.strokeText(text, x, y + 30);
         ctx.fillText(text, x, y + 30);
@@ -508,8 +512,9 @@ function drawCountdown() {
     ctx.save();
     ctx.fillStyle = text === 'GO!' ? '#FFD54F' : '#FFFFFF';
     ctx.strokeStyle = '#212121';
-    ctx.lineWidth = 6;
-    ctx.font = 'bold 130px sans-serif';
+    ctx.lineWidth = Math.max(3, canvas.width / 80);
+    const fontSize = Math.min(130, canvas.width / 3.7);
+    ctx.font = `bold ${fontSize}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
