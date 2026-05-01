@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>うまレース 〜飲みゲー〜</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- ===== Setup Screen ===== -->
+        <section id="setupScreen" class="screen active">
+            <header class="setup-header">
+                <h1>🏇 うまレース</h1>
+                <p class="subtitle">飲みゲーバージョン</p>
+            </header>
+
+            <div class="setup-section">
+                <label class="count-label">
+                    プレイ人数 <span id="playerCountDisplay">4</span>名
+                </label>
+                <input type="range" id="playerCount" min="2" max="8" value="4">
+                <div class="count-marks">
+                    <span>2</span><span>3</span><span>4</span><span>5</span>
+                    <span>6</span><span>7</span><span>8</span>
+                </div>
+            </div>
+
+            <div id="playerList" class="player-list"></div>
+
+            <button id="startBtn" class="btn-primary">レース開始！</button>
+
+            <div class="rules">
+                <h3>あそびかた</h3>
+                <ul>
+                    <li>各自の馬を選んで「レース開始」を押そう</li>
+                    <li>馬のスピードはランダム＆途中でトラップ発動</li>
+                    <li>最下位になった人は罰ゲーム 🍺</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ===== Race Screen ===== -->
+        <section id="raceScreen" class="screen">
+            <canvas id="raceCanvas"></canvas>
+            <div id="eventBanner" class="event-banner"></div>
+            <div id="rankingPanel" class="ranking-panel"></div>
+        </section>
+
+        <!-- ===== Result Screen ===== -->
+        <section id="resultScreen" class="screen">
+            <h2 class="result-title">🏆 結果発表 🏆</h2>
+            <div id="rankings" class="rankings"></div>
+            <div id="punishment" class="punishment"></div>
+            <button id="restartBtn" class="btn-primary">もう一度プレイ</button>
+        </section>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
