@@ -30,10 +30,12 @@
 
             <button id="startBtn" class="btn-primary">レース開始！</button>
 
+            <button id="historyBtn" class="btn-secondary">📋 履歴を見る</button>
+
             <div class="rules">
                 <h3>あそびかた</h3>
                 <ul>
-                    <li>各自の馬を選んで「レース開始」を押そう</li>
+                    <li>各自の名前を入力して「レース開始」を押そう</li>
                     <li>馬のスピードはランダム＆途中でトラップ発動</li>
                     <li>最下位になった人は罰ゲーム 🍺</li>
                 </ul>
@@ -54,7 +56,18 @@
             <div id="punishment" class="punishment"></div>
             <button id="restartBtn" class="btn-primary">もう一度プレイ</button>
         </section>
+
+        <!-- ===== History Screen ===== -->
+        <section id="historyScreen" class="screen">
+            <div class="history-header">
+                <button id="backFromHistoryBtn" class="btn-back">← 戻る</button>
+                <h2>レース履歴</h2>
+            </div>
+            <div id="historyList" class="history-list"></div>
+        </section>
     </div>
+
+    <script src="config.js"></script>
     <script src="game.js"></script>
 </body>
 </html>
