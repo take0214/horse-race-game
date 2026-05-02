@@ -20,7 +20,7 @@ const TRACK_PAD = 24;
 // トラック表示域の下端Y座標（ピクセル）
 const TRACK_BOTTOM_Y = 680;
 // トラック表示域の上端Y座標（ピクセル）
-const TRACK_TOP_Y = 90;
+const TRACK_TOP_Y = 40;
 
 // --- タイミング ---
 // カウントダウンの長さ（フレーム数 / 60fps基準）
