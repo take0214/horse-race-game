@@ -149,19 +149,40 @@ function initRace() {
 }
 
 // ===== Events =====
+// impact: 'negative' = 対象に不利, 'positive' = 対象に有利 (target:'random' のときの重み付けに使用)
 const EVENT_TYPES = [
-    { id: 'lightning', emoji: '⚡', name: '稲妻が直撃！',      target: 'random', duration: LIGHTNING_STUN_DURATION, effect: 'stun' },
-    { id: 'turbo',     emoji: '💨', name: 'ターボ発動！',      target: 'random', duration: TURBO_DURATION,          effect: 'speed', mul: TURBO_SPEED_MUL },
-    { id: 'banana',    emoji: '🍌', name: 'バナナで転倒！',    target: 'random', duration: BANANA_DURATION,         effect: 'speed', mul: BANANA_SPEED_MUL },
-    { id: 'sleep',     emoji: '😴', name: '居眠り発動…',      target: 'random', duration: SLEEP_STUN_DURATION,     effect: 'stun' },
-    { id: 'drunk',     emoji: '🍺', name: '酔っぱらいフラフラ',target: 'random', duration: DRUNK_DURATION,          effect: 'drunk' },
-    { id: 'rocket',    emoji: '🚀', name: 'ビリ救済ロケット！',target: 'last',   duration: ROCKET_DURATION,         effect: 'speed', mul: ROCKET_SPEED_MUL },
-    { id: 'snake',     emoji: '🐍', name: '先頭にヘビ出現！',  target: 'first',  duration: SNAKE_STUN_DURATION,     effect: 'stun' },
-    { id: 'wind',      emoji: '🌪️', name: '追い風！全員加速！',target: 'all',    duration: WIND_DURATION,           effect: 'speed', mul: WIND_SPEED_MUL },
-    { id: 'meteor',    emoji: '☄️', name: '隕石直撃で後退！',  target: 'random', duration: 1,                       effect: 'warp',  amount: METEOR_WARP_AMOUNT },
-    { id: 'warp',      emoji: '✨', name: 'ワープゾーン！',    target: 'random', duration: 1,                       effect: 'warp',  amount: WARP_FORWARD_AMOUNT },
-    { id: 'poop',      emoji: '💩', name: '落とし物で減速…',  target: 'random', duration: POOP_DURATION,           effect: 'speed', mul: POOP_SPEED_MUL },
+    { id: 'lightning', emoji: '⚡', name: '稲妻が直撃！',      target: 'random', impact: 'negative', duration: LIGHTNING_STUN_DURATION, effect: 'stun' },
+    { id: 'turbo',     emoji: '💨', name: 'ターボ発動！',      target: 'random', impact: 'positive', duration: TURBO_DURATION,          effect: 'speed', mul: TURBO_SPEED_MUL },
+    { id: 'banana',    emoji: '🍌', name: 'バナナで転倒！',    target: 'random', impact: 'negative', duration: BANANA_DURATION,         effect: 'speed', mul: BANANA_SPEED_MUL },
+    { id: 'sleep',     emoji: '😴', name: '居眠り発動…',      target: 'random', impact: 'negative', duration: SLEEP_STUN_DURATION,     effect: 'stun' },
+    { id: 'drunk',     emoji: '🍺', name: '酔っぱらいフラフラ',target: 'random', impact: 'negative', duration: DRUNK_DURATION,          effect: 'drunk' },
+    { id: 'rocket',    emoji: '🚀', name: 'ビリ救済ロケット！',target: 'last',                       duration: ROCKET_DURATION,         effect: 'speed', mul: ROCKET_SPEED_MUL },
+    { id: 'snake',     emoji: '🐍', name: '先頭にヘビ出現！',  target: 'first',                      duration: SNAKE_STUN_DURATION,     effect: 'stun' },
+    { id: 'wind',      emoji: '🌪️', name: '追い風！全員加速！',target: 'all',                        duration: WIND_DURATION,           effect: 'speed', mul: WIND_SPEED_MUL },
+    { id: 'meteor',    emoji: '☄️', name: '隕石直撃で後退！',  target: 'random', impact: 'negative', duration: 1,                       effect: 'warp',  amount: METEOR_WARP_AMOUNT },
+    { id: 'warp',      emoji: '✨', name: 'ワープゾーン！',    target: 'random', impact: 'positive', duration: 1,                       effect: 'warp',  amount: WARP_FORWARD_AMOUNT },
+    { id: 'poop',      emoji: '💩', name: '落とし物で減速…',  target: 'random', impact: 'negative', duration: POOP_DURATION,           effect: 'speed', mul: POOP_SPEED_MUL },
 ];
+
+// 順位に基づいた重み付きランダム選択
+// isNegative=true のとき上位馬ほど選ばれやすく、false のとき下位馬ほど選ばれやすい
+function getWeightedTarget(horses, isNegative) {
+    const ranked = [...horses].sort((a, b) => b.progress - a.progress);
+    const n = ranked.length;
+    const weights = ranked.map((_, i) => {
+        const pos = i + 1; // 1=先頭, n=最下位
+        return isNegative
+            ? Math.pow(n + 1 - pos, RANK_WEIGHT_EXPONENT) // 先頭ほど大きい
+            : Math.pow(pos, RANK_WEIGHT_EXPONENT);         // 最下位ほど大きい
+    });
+    const total = weights.reduce((s, w) => s + w, 0);
+    let r = Math.random() * total;
+    for (let i = 0; i < ranked.length; i++) {
+        r -= weights[i];
+        if (r <= 0) return ranked[i];
+    }
+    return ranked[ranked.length - 1];
+}
 
 function triggerEvent() {
     const alive = state.players.filter(p => !p.finished);
@@ -169,7 +190,7 @@ function triggerEvent() {
 
     const ev = EVENT_TYPES[Math.floor(Math.random() * EVENT_TYPES.length)];
     let targets;
-    if      (ev.target === 'random') targets = [alive[Math.floor(Math.random() * alive.length)]];
+    if      (ev.target === 'random') targets = [getWeightedTarget(alive, ev.impact === 'negative')];
     else if (ev.target === 'all')    targets = alive;
     else if (ev.target === 'last')   targets = [[...alive].sort((a, b) => a.progress - b.progress)[0]];
     else if (ev.target === 'first')  targets = [[...alive].sort((a, b) => b.progress - a.progress)[0]];
